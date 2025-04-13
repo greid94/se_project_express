@@ -15,21 +15,22 @@ const likeItem = (req, res) => {
       .send({ message: "Invalid item ID format" });
   }
 
-  return ClothingItem.findByIdAndUpdate(
-    itemId,
-    {
-      $addToSet: {
-        likes: userId,
+  return (
+    ClothingItem.findByIdAndUpdate(
+      itemId,
+      {
+        $addToSet: {
+          likes: userId,
+        },
       },
-    },
-    { new: true }
-  )
-    .orFail(() => {
-      throw Object.assign(new Error("Item not found"), {
-        statusCode: STATUS_CODES.NOT_FOUND,
-      });
-    })
-    .then((item) => {
+      { new: true }
+    )
+      .orFail(() => {
+        throw Object.assign(new Error("Item not found"), {
+          statusCode: STATUS_CODES.NOT_FOUND,
+        });
+      })
+      /*.then((item) => {
       if (!item) {
         return res
           .status(STATUS_CODES.NOT_FOUND)
@@ -37,23 +38,24 @@ const likeItem = (req, res) => {
       }
       console.log("Item liked successfully:", item);
       return res.status(STATUS_CODES.OK).send({ data: item });
-    })
-    .catch((err) => {
-      console.error("Error liking item:", err);
-      if (err.name === "CastError") {
+    })*/
+      .catch((err) => {
+        console.error("Error liking item:", err);
+        if (err.name === "CastError") {
+          return res
+            .status(STATUS_CODES.BAD_REQUEST)
+            .send({ message: "Invalid item ID format" });
+        }
+        if (err.statusCode === STATUS_CODES.NOT_FOUND) {
+          return res
+            .status(STATUS_CODES.NOT_FOUND)
+            .send({ message: "Item not found" });
+        }
         return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: "Invalid item ID format" });
-      }
-      if (err.statusCode === STATUS_CODES.NOT_FOUND) {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: "Item not found" });
-      }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Internal server error" });
-    });
+          .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+          .send({ message: "Internal server error" });
+      })
+  );
 };
 
 const dislikeItem = (req, res) => {
