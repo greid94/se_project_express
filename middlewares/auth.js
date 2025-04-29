@@ -12,6 +12,7 @@ const statusCodes = require("../utils/errors");
 
 const auth = (req, res, next) => {
   try {
+    // Check if the Authorization header is present and starts with "Bearer "
     const { authorization } = req.headers;
     if (!authorization || !authorization.startsWith("Bearer ")) {
       return res
@@ -19,7 +20,10 @@ const auth = (req, res, next) => {
         .send({ message: "Authorization required" });
     }
 
+    // Extract the token from the Authorization header
     const token = authorization.replace("Bearer ", "");
+
+    // Verify the JWT using the secret key
     const payload = jwt.verify(token, JWT_SECRET);
 
     req.user = payload;
