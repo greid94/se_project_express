@@ -8,7 +8,7 @@ const usersRouter = require("./routes/users");
 
 const auth = require("./middlewares/auth");
 const { createUser, login } = require("./controllers/users");
-const { INTERNAL_SERVER_ERROR } = require("./utils/errors");
+const { NOT_FOUND_ERROR } = require("./utils/errors");
 
 const app = express();
 // Middleware to parse JSON and URL-encoded data
@@ -56,9 +56,7 @@ mongoose
 // Middleware for handling 404 Not Found
 
 app.use((req, res) => {
-  res
-    .status(INTERNAL_SERVER_ERROR)
-    .send({ message: "Requested resource not found" });
+  res.status(NOT_FOUND_ERROR).send({ message: "Requested resource not found" });
 });
 
 // Error handling middleware
