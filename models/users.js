@@ -3,15 +3,20 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true, minlength: 2, maxlength: 20 },
+  name: {
+    type: String,
+    required: [true, "The name field is required"],
+    minlength: [2, "The name must be at least 2 characters"],
+    maxlength: [30, "The name must not exceed 30 characters"],
+  },
   avatar: {
     type: String,
-    required: [true, "The avatar fields is required."],
+    required: [true, "The avatar field is required"],
     validate: {
       validator(value) {
         return validator.isURL(value);
       },
-      message: "You must enter a valid URL",
+      message: "The avatar must be a valid URL",
     },
   },
   email: {
@@ -22,8 +27,10 @@ const userSchema = new mongoose.Schema({
       validator(value) {
         return validator.isEmail(value);
       },
-      message: "Invalid email format",
+      message: "The email must be a valid email",
     },
+    lowercase: true,
+    trim: true,
   },
   password: {
     type: String,
@@ -31,24 +38,24 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
-
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password
+) {
   return this.findOne({ email })
-    .select("+password")
+    .select("+password") // explicitly include password
     .then((user) => {
+      // the password hash will be there, in the user object
       if (!user) {
-        console.log("User not found");
         return Promise.reject(new Error("Incorrect email or password"));
       }
-      console.log("User found:", user);
-      //
+
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          console.log("Password does not match");
-
           return Promise.reject(new Error("Incorrect email or password"));
         }
-        return user;
+
+        return user; // now user is available
       });
     });
 };
