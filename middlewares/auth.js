@@ -3,17 +3,16 @@ const { JWT_SECRET } = require("../utils/config");
 const { STATUS_CODES } = require("../utils/errors");
 
 const auth = (req, res, next) => {
-  // Get authorization from header
   const { authorization } = req.headers;
 
-  // Check if authorization header exists
+  // Check if authorization header is present and starts with "Bearer "
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return res
       .status(STATUS_CODES.UNAUTHORIZED)
       .send({ message: "Authorization required" });
   }
 
-  // Get token from authorization header
+  // Extract token from authorization header
   const token = authorization.replace("Bearer ", "");
 
   try {
@@ -23,10 +22,10 @@ const auth = (req, res, next) => {
     // Add payload to request object
     req.user = payload;
 
-    // Move to next middleware
+    // Call next middleware
     return next();
   } catch (err) {
-    // Handle token verification errors
+    // If token is invalid, send unauthorized response
     return res
       .status(STATUS_CODES.UNAUTHORIZED)
       .send({ message: "Invalid token" });

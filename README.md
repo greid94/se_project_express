@@ -1,3 +1,3 @@
-# PROJECT 13
+# PROJECT 14
 
-This project focuses on implementing authentication and authorization on the back-end.
+This project focuses on implementing authentication on the front-end.

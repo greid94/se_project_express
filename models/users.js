@@ -43,7 +43,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
   password
 ) {
   return this.findOne({ email })
-    .select("+password") // explicitly include password
+    .select("+password") // this will include the password hash in the user object
     .then((user) => {
       // the password hash will be there, in the user object
       if (!user) {
@@ -55,7 +55,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
           return Promise.reject(new Error("Incorrect email or password"));
         }
 
-        return user; // now user is available
+        return user;
       });
     });
 };
