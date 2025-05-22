@@ -1,33 +1,34 @@
-const ClothingItem = require("../models/clothingitems");
-const { STATUS_CODES } = require("../utils/errors");
+const BadRequestError = require("../custom_errors/BadRequestError");
+const ForbiddenError = require("../custom_errors/ForbiddenError");
+const NotFoundError = require("../custom_errors/NotFoundError");
 
-const createItem = (req, res) => {
-  const { name, weather, imageUrl } = req.body;
-  // console.log("object", name, weather, imageUrl);
-  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
-    .then((items) => res.status(STATUS_CODES.CREATED).send(items))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(STATUS_CODES.BAD_REQUEST).send({
-          message:
-            "Invalid data - please ensure all required fields are filled in",
-        });
-      }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
+const { STATUS_CODES } = require("../utils/errors");
+const ClothingItem = require("../models/clothingitems");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
     .catch((err) => {
+      next(err); // Pass the error to the next middleware
+    });
+};
+
+const createItem = (req, res) => {
+  const { name, weather, imageUrl } = req.body;
+  // console.log("object", name, weather, imageUrl);
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+    .then((items) => res.send(items))
+    .catch((err) => {
       console.error(err);
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" }); // General "catch all" catch block
+      if (err.name === "ValidationError") {
+        next(
+          new BadRequestError(
+            "Invalid data - please ensure all required fields are filled in"
+          )
+        );
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -43,18 +44,12 @@ const likeItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: "Invalid item ID" });
+        return next(new BadRequestError("Invalid item ID"));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: "Item not found" });
+        return next(new NotFoundError("Item not found"));
       }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      return next(new ForbiddenError("An error has occurred on the server"));
     });
 };
 
@@ -69,18 +64,12 @@ const unlikeItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: "Invalid item ID" });
+        return next(new BadRequestError("Invalid item ID"));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: "Item not found" });
+        return next(new NotFoundError("Item not found"));
       }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
+      return next(new ForbiddenError("An error has occurred on the server"));
     });
 };
 
@@ -89,8 +78,9 @@ const deleteItem = (req, res) => {
     .orFail()
     .then((item) => {
       if (!item.owner.equals(req.user._id)) {
-        const error = new Error("Forbidden");
-        error.statusCode = STATUS_CODES.FORBIDDEN;
+        next(
+          new ForbiddenError("You do not have permission to delete this item")
+        );
         return Promise.reject(error);
       }
       return ClothingItem.findByIdAndDelete(req.params.id);
@@ -99,23 +89,17 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.statusCode === STATUS_CODES.FORBIDDEN) {
-        return res
-          .status(STATUS_CODES.FORBIDDEN)
-          .send({ message: err.message });
+        return next(
+          new ForbiddenError("You do not have permission to delete this item")
+        );
       }
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: "Invalid item ID" });
+        return next(new BadRequestError("Invalid item ID"));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .send({ message: "Item not found" });
+        return next(new NotFoundError("Item not found"));
       }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
+      return next(new ForbiddenError("An error has occurred on the server"));
     });
 };
 

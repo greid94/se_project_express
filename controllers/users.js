@@ -100,6 +100,10 @@ const updateProfile = (req, res) => {
       delete userObject.password;
       res.status(STATUS_CODES.OK).send(userObject);
     })
+    // If the user is not found, return a 404 error
+    // If the user ID is invalid, return a 400 error
+    // If the request is successful, return the updated user object
+    // If there is a server error, return a 500 error
 
     .catch((err) => {
       console.error(err);
@@ -119,5 +123,5 @@ const updateProfile = (req, res) => {
         .send({ message: "An error occurred on the server" });
     });
 };
-
+// Export the functions to be used in other files
 module.exports = { createUser, getCurrentUser, login, updateProfile };
