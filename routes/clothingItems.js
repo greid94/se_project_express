@@ -7,7 +7,7 @@ const {
   likeItem,
   unlikeItem,
   deleteItem,
-} = require("../controllers/clothingItems");
+} = require("../controllers/clothingitems");
 
 // Public routes
 router.get("/", getItems); // Read
