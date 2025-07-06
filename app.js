@@ -5,7 +5,9 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
+const clothingitems = require("./models/clothingitems");
 const app = express();
+clothingitems; // Importing the clothingitems model to ensure it's registered with Mongoose
 
 const { PORT = 3001 } = process.env;
 
