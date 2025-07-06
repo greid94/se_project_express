@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const clothingitems = require("../routes/clothingitems.js");
+const clothingitems = require("./clothingItems.js");
 const userRouter = require("./users");
 const { STATUS_CODES } = require("../utils/errors");
 const { login, createUser } = require("../controllers/users");
