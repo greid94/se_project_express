@@ -3,7 +3,7 @@ const ForbiddenError = require("../custom_errors/ForbiddenError");
 const NotFoundError = require("../custom_errors/NotFoundError");
 
 const { STATUS_CODES } = require("../utils/errors");
-const ClothingItem = require("../models/clothingitems");
+const ClothingItem = require("../models/clothingItems");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
