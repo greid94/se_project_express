@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const userRouter = require("./users");
-const clothingitems = require("./clothingitems");
+const clothingitemsRouter = require("./clothingitems");
 const { STATUS_CODES } = require("../utils/errors");
 const { login, createUser } = require("../controllers/users");
 
@@ -9,7 +9,7 @@ router.post("/signin", login);
 router.post("/signup", createUser);
 
 router.use("/users", userRouter);
-router.use("/items", clothingitems);
+router.use("/items", clothingitemsRouter);
 
 // 404 handler
 router.use((req, res) => {
