@@ -2,6 +2,7 @@ const express = require("express");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const cors = require("cors");
+require("dotenv").config(); // load environment variables from .env file
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
@@ -25,6 +26,6 @@ app.use("/", mainRouter);
 app.use(errorLogger); // error logger
 app.use(errors()); // celebrate error handler
 app.use(errorHandler); //centralized error handler
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });
