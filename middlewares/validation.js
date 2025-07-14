@@ -56,25 +56,10 @@ const validateItemId = celebrate({
   }),
 });
 
-const validateCardBody = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).messages({
-      "string.min": "Minimum name length is 2 characters",
-      "string.max": "Maximum name length is 30 characters",
-      "string.empty": "Name is required",
-    }),
-    imageUrl: Joi.string().custom(validateURL).messages({
-      "string.url": "Image URL must be a valid URL",
-      "string.empty": "Image URL must be filled",
-    }),
-  }),
-});
-
 module.exports = {
   validateClothingItem,
   validateUserInfo,
   validateUserLogin,
   validateUpdatingUser,
   validateItemId,
-  validateCardBody,
 };

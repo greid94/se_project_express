@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 class ConflictError extends Error {
   constructor(message) {
     super(message);
@@ -5,3 +6,4 @@ class ConflictError extends Error {
     this.statusCode = 409; // HTTP status code for conflict
   }
 }
+module.exports = ConflictError;

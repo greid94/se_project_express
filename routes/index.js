@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const userRouter = require("./users");
 const clothingitems = require("./clothingItems");
-const { STATUS_CODES } = require("../utils/errors");
+
 const { login, createUser } = require("../controllers/users");
+const auth = require("../middlewares/auth");
 
 // Public routes
 router.post("/signin", login);
@@ -12,9 +13,7 @@ router.use("/users", userRouter);
 router.use("/items", clothingitems);
 
 // 404 handler
-router.use((req, res) => {
-  res.status(STATUS_CODES.NOT_FOUND).send({ message: "Router not found" });
-});
+router.use(auth);
 
 module.exports = router;
 // This code defines the main router for the Express application. It sets up public routes for user authentication (login and signup) and protected routes for user and clothing item management. The router also includes a 404 handler for undefined routes. The clothing items and user routers are imported from separate files, allowing for modular organization of the code.

@@ -1,9 +1,9 @@
 const express = require("express");
 const { errors } = require("celebrate");
-const { requestLogger, errorLogger } = require("./middlewares/logger");
 const cors = require("cors");
 require("dotenv").config(); // load environment variables from .env file
 const mongoose = require("mongoose");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const mainRouter = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -15,6 +15,7 @@ const { PORT = 3001 } = process.env;
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
+    // eslint-disable-next-line no-console
     console.log("Connected to DB");
   })
   .catch(console.error); // .catch((e) => console.error(e)); is an equivilent expression
@@ -22,10 +23,16 @@ mongoose
 app.use(cors());
 app.use(express.json()); // middleware: put before router
 app.use(requestLogger); // request logger
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 app.use("/", mainRouter);
 app.use(errorLogger); // error logger
 app.use(errors()); // celebrate error handler
-app.use(errorHandler); //centralized error handler
+app.use(errorHandler); // centralized error handler
 app.listen(PORT, "0.0.0.0", () => {
+  // eslint-disable-next-line no-console
   console.log(`Server is running on port ${PORT}`);
 });

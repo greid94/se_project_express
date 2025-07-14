@@ -5,7 +5,7 @@ const NotFoundError = require("../custom_errors/NotFoundError");
 const { STATUS_CODES } = require("../utils/errors");
 const ClothingItem = require("../models/clothingItems");
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
     .catch((err) => {
@@ -13,7 +13,7 @@ const getItems = (req, res) => {
     });
 };
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   // console.log("object", name, weather, imageUrl);
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -32,7 +32,7 @@ const createItem = (req, res) => {
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   // console.log("check", req.user._id);
   ClothingItem.findByIdAndUpdate(
     req.params.id,
@@ -53,7 +53,7 @@ const likeItem = (req, res) => {
     });
 };
 
-const unlikeItem = (req, res) => {
+const unlikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } }, // remove _id from the array
@@ -73,7 +73,7 @@ const unlikeItem = (req, res) => {
     });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   ClothingItem.findById(req.params.id)
     .orFail()
     .then((item) => {
@@ -81,7 +81,9 @@ const deleteItem = (req, res) => {
         next(
           new ForbiddenError("You do not have permission to delete this item")
         );
-        return Promise.reject(error);
+        return Promise.reject(
+          new ForbiddenError("You do not have permission to delete this item")
+        );
       }
       return ClothingItem.findByIdAndDelete(req.params.id);
     })

@@ -1,3 +1,6 @@
-# PROJECT 14
+# PROJECT 15
 
-This project focuses on implementing authentication on the front-end.
+## Domain name
+
+- Frontend & Backend: www.greidwtwr.twilightparadox.com
+- API: api.greidwtwr.twilightparadox.com

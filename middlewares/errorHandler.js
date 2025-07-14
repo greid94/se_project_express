@@ -1,4 +1,4 @@
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   console.error(err);
   // Check if the error is a validation error
   const { statusCode = 500, message } = err;
