@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 class ConflictError extends Error {
   constructor(message) {
     super(message);

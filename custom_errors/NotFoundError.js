@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 class NotFoundError extends Error {
   constructor(message) {
     super(message);
@@ -6,3 +5,5 @@ class NotFoundError extends Error {
     this.statusCode = 404;
   }
 }
+
+module.exports = NotFoundError;

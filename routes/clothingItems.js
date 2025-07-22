@@ -20,7 +20,7 @@ router.use(auth);
 
 // Protected routes
 router.post("/", validateClothingItem, createItem); // Create
-router.put("/:id/likes", validateItemId, likeItem); // Update
+router.put("/:itemId", validateItemId, likeItem); // Update
 
 router.delete("/:id/likes", validateItemId, unlikeItem);
 router.delete("/:id", validateItemId, deleteItem);

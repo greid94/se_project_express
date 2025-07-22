@@ -49,7 +49,7 @@ const likeItem = (req, res, next) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("Item not found"));
       }
-      return next(new ForbiddenError("An error has occurred on the server"));
+      return next(err);
     });
 };
 
@@ -69,7 +69,7 @@ const unlikeItem = (req, res, next) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("Item not found"));
       }
-      return next(new ForbiddenError("An error has occurred on the server"));
+      return next(err);
     });
 };
 
@@ -78,10 +78,7 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (!item.owner.equals(req.user._id)) {
-        next(
-          new ForbiddenError("You do not have permission to delete this item")
-        );
-        return Promise.reject(
+        return next(
           new ForbiddenError("You do not have permission to delete this item")
         );
       }
@@ -101,7 +98,7 @@ const deleteItem = (req, res, next) => {
       if (err.name === "DocumentNotFoundError") {
         return next(new NotFoundError("Item not found"));
       }
-      return next(new ForbiddenError("An error has occurred on the server"));
+      return next(err);
     });
 };
 
