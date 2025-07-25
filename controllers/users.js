@@ -37,7 +37,7 @@ const createUser = (req, res, next) => {
           })
         );
       }
-      return next(new { message: "An error occurred on the server" }());
+      return next(new InternalServerError("An error occurred on the server"));
     });
 };
 
