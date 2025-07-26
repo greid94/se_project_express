@@ -20,9 +20,9 @@ router.use(auth);
 
 // Protected routes
 router.post("/", validateClothingItem, createItem); // Create
-router.put("/:itemId", validateItemId, likeItem); // Update
+router.put("/:itemId/likes", validateItemId, likeItem); // Update
 
-router.delete("/:id/likes", validateItemId, unlikeItem);
-router.delete("/:id", validateItemId, deleteItem);
+router.delete("/:itemId/likes", validateItemId, unlikeItem);
+router.delete("/:itemId", validateItemId, deleteItem);
 
 module.exports = router;

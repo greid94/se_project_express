@@ -24,17 +24,16 @@ const createUser = (req, res, next) => {
       if (err.name === "ValidationError") {
         const invalidFields = Object.keys(err.errors).join(", ");
         return next(
-          new BadRequestError({
-            message: `Invalid data - The following fields are required: ${invalidFields}`,
-          })
+          new BadRequestError(
+            `Invalid data - The following fields are required: ${invalidFields}`
+          )
         );
       }
       if (err.code === 11000) {
         return next(
-          new ConflictError({
-            message:
-              "An account with this email already exists- please use a different email",
-          })
+          new ConflictError(
+            "An account with this email already exists- please use a different email"
+          )
         );
       }
       return next(new InternalServerError("An error occurred on the server"));
@@ -109,9 +108,9 @@ const updateProfile = (req, res, next) => {
       if (err.name === "ValidationError") {
         const invalidFields = Object.keys(err.errors).join(", ");
         return next(
-          new BadRequestError({
-            message: `Invalid data - The following fields are required: ${invalidFields}`,
-          })
+          new BadRequestError(
+            `Invalid data - The following fields are required: ${invalidFields}`
+          )
         );
       }
       return next(new InternalServerError("An error occurred on the server"));

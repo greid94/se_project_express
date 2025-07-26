@@ -3,7 +3,7 @@ const userRouter = require("./users");
 const clothingitems = require("./clothingItems");
 
 const { login, createUser } = require("../controllers/users");
-const { NotFoundError } = require("../custom_errors/NotFoundError");
+const NotFoundError = require("../custom_errors/NotFoundError");
 
 // Public routes
 router.post("/signin", login);

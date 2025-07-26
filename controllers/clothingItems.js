@@ -34,7 +34,7 @@ const createItem = (req, res, next) => {
 const likeItem = (req, res, next) => {
   // console.log("check", req.user._id);
   ClothingItem.findByIdAndUpdate(
-    req.params.id,
+    req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true }
   )
@@ -54,7 +54,7 @@ const likeItem = (req, res, next) => {
 
 const unlikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
-    req.params.id,
+    req.params.itemId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true }
   )
@@ -73,7 +73,7 @@ const unlikeItem = (req, res, next) => {
 };
 
 const deleteItem = (req, res, next) => {
-  ClothingItem.findById(req.params.id)
+  ClothingItem.findById(req.params.itemId)
     .orFail()
     .then((item) => {
       if (!item.owner.equals(req.user._id)) {
@@ -81,9 +81,9 @@ const deleteItem = (req, res, next) => {
           new ForbiddenError("You do not have permission to delete this item")
         );
       }
-      return ClothingItem.findByIdAndDelete(req.params.id);
+      return ClothingItem.findByIdAndDelete(req.params.itemId);
     })
-    .then((deletedItem) => res.send({ deletedItem }))
+
     .catch((err) => {
       console.error(err);
       if (err.statusCode === STATUS_CODES.FORBIDDEN) {
