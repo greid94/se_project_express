@@ -11,35 +11,54 @@ const UNAUTHORIZED = require("../custom_errors/UnauthorizedError");
 // POST
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => User.create({ name, avatar, email, password: hash }))
+
+  // Step 1: Validate required fields
+  if (!email || !password || !name) {
+    return next(
+      new BadRequestError("Missing required fields: name, email, or password")
+    );
+  }
+
+  // Step 2: Check if user already exists
+  User.findOne({ email })
+    .then((existingUser) => {
+      if (existingUser) {
+        throw new ConflictError(
+          "An account with this email already exists – please use a different email"
+        );
+      }
+
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => {
+      return User.create({ name, avatar, email, password: hash });
+    })
     .then((user) => {
       const userObject = user.toObject();
       delete userObject.password;
       res.status(STATUS_CODES.CREATED).send(userObject);
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
         const invalidFields = Object.keys(err.errors).join(", ");
         return next(
           new BadRequestError(
-            `Invalid data - The following fields are required: ${invalidFields}`
+            `The following fields are required: ${invalidFields}`
           )
         );
       }
+
       if (err.code === 11000) {
         return next(
           new ConflictError(
-            "An account with this email already exists- please use a different email"
+            "An account with this email already exists – please use a different email"
           )
         );
       }
-      return next(new InternalServerError("An error occurred on the server"));
+
+      return next(err);
     });
 };
-
 // GET
 const getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
@@ -54,7 +73,7 @@ const getCurrentUser = (req, res, next) => {
       if (err.name === "CastError") {
         return next(new BadRequestError("Invalid user ID"));
       }
-      return next(new InternalServerError("An error occurred on the server"));
+      return next(err);
     });
 };
 
@@ -113,7 +132,15 @@ const updateProfile = (req, res, next) => {
           )
         );
       }
-      return next(new InternalServerError("An error occurred on the server"));
+
+      if (err.code === 11000) {
+        return next(
+          new ConflictError(
+            "An account with this email already exists- please use a different email"
+          )
+        );
+      }
+      return next(err);
     });
 };
 // Export the functions to be used in other files
